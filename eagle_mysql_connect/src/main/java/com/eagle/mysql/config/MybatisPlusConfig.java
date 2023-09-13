@@ -44,7 +44,7 @@ public class MybatisPlusConfig {
             throw new NullPointerException("no mysql password");
         }
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://h131:3306/hsp_mybatis?serverTimezone=GMT%2B8&characterEncoding=utf-8");
+        dataSource.setUrl("jdbc:mysql://h131:3306/hsp_mybatis?useSSL=true&requireSSL=true&verifyServerCertificate=false&characterEncoding=UTF-8");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUsername("root");
 

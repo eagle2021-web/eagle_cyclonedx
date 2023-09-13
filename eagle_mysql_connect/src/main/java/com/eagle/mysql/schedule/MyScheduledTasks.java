@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class MyScheduledTasks {
 
-    @Scheduled(cron = "0/3 * * * * ?") // 每分钟执行一次
+    // @Scheduled(cron = "0/3 * * * * ?") // 每分钟执行一次
     public void myTask() {
         // 定时任务逻辑
         System.out.println("定时任务执行了！");
