@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
@@ -44,6 +45,7 @@ import org.springframework.stereotype.Service;
 //)
 @EntityScan("com.eagle.mysql.pojo.entity")
 //@MapperScan(basePackages = "com.eagle.mysql.convertor")
+@EnableFeignClients(basePackages = {"com.eagle.mysql.feign"})
 public class ServiceMysqlApplication {
 
     public static void main(String[] args) {

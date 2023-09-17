@@ -9,7 +9,7 @@ spring:
     name: mysql_connect # 服务名
   data:
     mongodb:
-      uri: mongodb://user:123456@h131:27019/mydb
+      uri: mongodb://user2:123456@h131:27020/mydb
   datasource: # mysql数据库连接
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
