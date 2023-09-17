@@ -10,7 +10,6 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.core.io.InputStreamResource;
@@ -24,10 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLOutput;
 import java.util.Objects;
 
 @RestController
@@ -46,23 +43,27 @@ public class MongoController {
     }
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file) {
+    public String upload(@RequestParam("file") MultipartFile file, @RequestParam String filename) {
 
         try {
             System.out.println(file.getSize());
             log.info("contentType = {}", file.getContentType());
+            System.out.println(file.getName());
+            System.out.println(file.getOriginalFilename());
+            System.out.println(filename);
             log.info("Objects.requireNonNull(file.getOriginalFilename()) = {}", Objects.requireNonNull(file.getOriginalFilename()));
             GridFSBucket gridFSBucket = GridFSBuckets.create(template.getDb());
             GridFSUploadOptions options = new GridFSUploadOptions()
                     .chunkSizeBytes(1024) // 设置 chunk 大小，默认为 255KB
-                    .metadata(new Document("contentType", file.getContentType()))
-                    ; // 其他元数据信息
+                    .metadata(new Document("contentType", file.getContentType())); // 其他元数据信息
+            InputStream inputStream = file.getInputStream();
 
-            ObjectId fileId = gridFSBucket.uploadFromStream(Objects.requireNonNull(file.getOriginalFilename()),
-                    file.getInputStream(),
+            ObjectId fileId = gridFSBucket.uploadFromStream(filename,
+                    inputStream,
                     options);
             // 存储完毕后的逻辑
             log.info("File uploaded with id: {}", fileId);
+            inputStream.close();
             return "ok";
         } catch (IOException e) {
             log.error("Failed to upload file", e);
