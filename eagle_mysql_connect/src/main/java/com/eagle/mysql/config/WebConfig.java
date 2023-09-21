@@ -16,18 +16,18 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new HandlerInterceptor() {
                     @Override
                     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-                        System.out.println(request.getRequestedSessionId());
-                        System.out.println(request.getSession().getId());
-                        System.out.println("1111111111111111");
+//                        System.out.println(request.getRequestedSessionId());
+//                        System.out.println(request.getSession().getId());
+//                        System.out.println("1111111111111111");
                         return HandlerInterceptor.super.preHandle(request, response, handler);
                     }
 
                     @Override
                     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
                                                 Exception ex) throws Exception {
-                        System.out.println(request.getRequestedSessionId());
-                        System.out.println(request.getSession().getId());
-                        System.out.println("1111111111111111");
+//                        System.out.println(request.getRequestedSessionId());
+//                        System.out.println(request.getSession().getId());
+//                        System.out.println("1111111111111111");
                         // 在视图渲染完成后进行拦截逻辑的处理
                     }
                 })

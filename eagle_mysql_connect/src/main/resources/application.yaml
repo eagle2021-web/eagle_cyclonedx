@@ -23,3 +23,14 @@ spring:
 logging:
   level:
     root: info
+    yun:
+      ling:
+        pm:
+          mapper: debug
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #控制台 不打印sql
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #打印sql到日志文件

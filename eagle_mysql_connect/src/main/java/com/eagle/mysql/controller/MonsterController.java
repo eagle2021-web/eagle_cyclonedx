@@ -37,6 +37,8 @@ public class MonsterController {
         Monster monster = new Monster();
         monster.setName("hsp");
         monsterMapper.addMonster2(monster);
+        Monster monster1 = monsterMapper.selectById(1);
+        log.info("query monster = {}", monster1);
         return monster.toString();
     }
 
