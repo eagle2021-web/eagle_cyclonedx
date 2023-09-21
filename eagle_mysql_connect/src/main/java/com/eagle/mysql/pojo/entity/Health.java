@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
+
 /**
  * <p>
  *
@@ -17,8 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value = "Health对象", description = "测试使用")
-public class Health {
-
+public class Health implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
