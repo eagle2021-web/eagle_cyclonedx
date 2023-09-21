@@ -1,0 +1,91 @@
+[
+  {
+    "obj": {
+      "groupId": "a",
+      "version": "a",
+      "artifactId": "a",
+      "language": "a",
+      "businessTag": 1,
+      "type": "component"
+    },
+    "expected": true,
+    "索引顺序": "type 业务 语言 名称 版本 组织"
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": "a",
+      "artifactId": "a",
+      "language": "a",
+      "businessTag": 1,
+      "type": "component"
+    },
+    "expected": true
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": null,
+      "artifactId": "a",
+      "language": "a",
+      "businessTag": 1,
+      "type": "component"
+    },
+    "expected": true
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": null,
+      "artifactId": null,
+      "language": "a",
+      "businessTag": 1,
+      "type": "component"
+    },
+    "expected": true
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": null,
+      "artifactId": null,
+      "language": null,
+      "businessTag": 1,
+      "type": "component"
+    },
+    "expected": true
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": null,
+      "artifactId": null,
+      "language": null,
+      "businessTag": null,
+      "type": "component"
+    },
+    "expected": true
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": "a",
+      "artifactId": null,
+      "language": null,
+      "businessTag": null,
+      "type": "component"
+    },
+    "expected": false
+  },
+  {
+    "obj": {
+      "groupId": null,
+      "version": "a",
+      "artifactId": null,
+      "language": null,
+      "businessTag": null,
+      "type": "component"
+    },
+    "expected": false
+  }
+]
