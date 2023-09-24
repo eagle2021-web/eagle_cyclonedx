@@ -1,0 +1,19 @@
+server:
+  port: 8090 # 服务端口
+  servlet:
+    context-path: /kafka
+spring:
+  profiles:
+    active: dev # 环境设置
+  application:
+    name: service-abc # 服务名
+  kafka:
+    producer:
+      bootstrap-servers: h131:9093,h131:9094,h131:9095
+      acks: all
+      retries: 0
+      batch-size: 16384
+
+logging:
+  level:
+    root: debug
