@@ -1,7 +1,5 @@
 server:
   port: 8115 #服务端口
-#servlet:
-#     context-path: /mysql_connect
 spring:
   profiles:
     active: dev # 环境设置

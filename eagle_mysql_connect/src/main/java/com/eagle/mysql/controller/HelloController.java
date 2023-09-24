@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @Slf4j
 public class HelloController {
-    @GetMapping("hello")
+    @GetMapping("/hello")
     public String hello(HttpServletRequest request) {
         System.out.println(request.getRequestedSessionId());
         System.out.println(request.getSession().getId());
