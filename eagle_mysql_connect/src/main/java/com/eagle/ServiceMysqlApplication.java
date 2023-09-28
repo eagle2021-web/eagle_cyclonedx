@@ -52,5 +52,4 @@ public class ServiceMysqlApplication {
         SpringApplication.run(ServiceMysqlApplication.class, args);
     }
 
-
 }

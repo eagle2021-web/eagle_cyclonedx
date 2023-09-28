@@ -1,128 +1,55 @@
 package com.eagle.mysql.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import io.swagger.annotations.ApiModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.ibatis.type.Alias;
-
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import com.eagle.mysql.pojo.enums.GenderEnum;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
- * 
+ * 妖怪信息表
  * </p>
  *
- * @author baomidou
- * @since 2023-07-02
+ * @author eagle
+ * @since 2023-09-28
  */
-@ApiModel(value = "Monster对象", description = "怪物")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Alias("Monster")
+@Getter
+@Setter
+@ApiModel(value = "Monster对象", description = "妖怪信息表")
 public class Monster implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
+    @ApiModelProperty("年龄")
     private Integer age;
 
+    @ApiModelProperty("郵箱地址")
     private String name;
 
+    @TableField("gender")
+    @ApiModelProperty("男1女0")
+    private GenderEnum gender;
+
+    @ApiModelProperty("郵箱地址")
     private String email;
 
+    @ApiModelProperty("生日")
     private LocalDate birthday;
 
-    private Object salary;
-
-    private Boolean gender;
-    @TableLogic
+    @ApiModelProperty("工资保留2位")
+    private BigDecimal salary;
+    @TableField("is_deleted")
+    @ApiModelProperty("是否已删除：0未删除，1已删除")
     private Byte isDeleted;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
-    public Object getSalary() {
-        return salary;
-    }
-
-    public void setSalary(Object salary) {
-        this.salary = salary;
-    }
-
-    public Boolean getGender() {
-        return gender;
-    }
-
-    public void setGender(Boolean gender) {
-        this.gender = gender;
-    }
-
-    public Byte getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Byte isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    @Override
-    public String toString() {
-        return "Monster{" +
-        "id = " + id +
-        ", age = " + age +
-        ", name = " + name +
-        ", email = " + email +
-        ", birthday = " + birthday +
-        ", salary = " + salary +
-        ", gender = " + gender +
-        ", isDeleted = " + isDeleted +
-        "}";
-    }
 }

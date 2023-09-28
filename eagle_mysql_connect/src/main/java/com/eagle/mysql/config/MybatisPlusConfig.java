@@ -1,9 +1,9 @@
 package com.eagle.mysql.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -16,6 +16,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 
 /**
  * @author eagle2020
@@ -26,77 +27,28 @@ import javax.sql.DataSource;
 @SuppressWarnings("all")
 public class MybatisPlusConfig {
 
+    /**
+     * 分页插件 3.5.X
+     *
+     * @author zhengkai.blog.csdn.net
+     */
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        //分页
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        return interceptor;
-    }
+    public PaginationInnerInterceptor paginationInnerInterceptor() {
+        PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor();
+        // 设置最大单页限制数量，默认 500 条，-1 不受限制
+        paginationInterceptor.setMaxLimit(-1L);
+        paginationInterceptor.setDbType(DbType.MYSQL);
 
-
-    @Profile("dev")
-    @Bean(destroyMethod = "close")
-    public DataSource dataSource() throws NullPointerException {
-        System.out.println("dev");
-        String password = "123456";
-        if (password == null) {
-            throw new NullPointerException("no mysql password");
-        }
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://h131:3306/hsp_mybatis?useSSL=true&requireSSL=true&verifyServerCertificate=false&characterEncoding=UTF-8");
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUsername("root");
-
-        dataSource.setPassword(password);
-        dataSource.setInitialSize(20);
-        dataSource.setMaxConnLifetimeMillis(30000);
-        return dataSource;
-    }
-
-    @Bean(destroyMethod = "close")
-    @Profile("prod222")
-    public DataSource dataSource2() throws NullPointerException {
-        System.out.println("prod");
-        String password = System.getenv("MYSQL_PASSWORD");
-        if (password == null) {
-            throw new NullPointerException("no mysql password");
-        }
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://h131:3306/hsp_mybatis?serverTimezone=GMT%2B8&characterEncoding=utf-8");
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUsername("root");
-
-        dataSource.setPassword(password);
-        dataSource.setInitialSize(20);
-        dataSource.setMaxConnLifetimeMillis(30000);
-        return dataSource;
+        // 开启 count 的 join 优化,只针对部分 left join
+        paginationInterceptor.setOptimizeJoin(true);
+        return paginationInterceptor;
     }
 
     @Bean
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
-        MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
-        factoryBean.setDataSource(dataSource); // 设置数据源
-        // 创建Mybatis的全局配置对象
-        GlobalConfig globalConfig = new GlobalConfig();
-        GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
-        dbConfig.setLogicDeleteField("flag");
-        dbConfig.setLogicDeleteValue("1");
-        dbConfig.setLogicNotDeleteValue("0");
-        globalConfig.setDbConfig(dbConfig);
-        // 应用全局配置
-        factoryBean.setGlobalConfig(globalConfig);
-        // 配置mapper XML文件的位置
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        factoryBean.setMapperLocations(resolver.getResources("classpath:com/eagle/mysql/mapper/xml/*.xml"));
-        factoryBean.setGlobalConfig(globalConfig);
-
-//        org.apache.ibatis.session.Configuration cfg = factoryBean.getObject().getConfiguration();
-//        TypeAliasRegistry registry = cfg.getTypeAliasRegistry();
-//        registry.registerAliases("com.eagle.mysql.pojo.entity");
-//        registry.registerAlias("Monster", com.eagle.mysql.pojo.entity.Monster.class);
-
-//        factoryBean.setConfiguration(cfg);
-        return factoryBean.getObject();
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+        mybatisPlusInterceptor.setInterceptors(Collections.singletonList(paginationInnerInterceptor()));
+        return mybatisPlusInterceptor;
     }
+
 }
