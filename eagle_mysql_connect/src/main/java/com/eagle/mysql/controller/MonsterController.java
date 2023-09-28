@@ -8,14 +8,12 @@ import com.eagle.mysql.pojo.dto.resp.MonsterDTO;
 import com.eagle.mysql.pojo.entity.Monster;
 import com.eagle.mysql.pojo.enums.GenderEnum;
 import com.eagle.mysql.service.IMonsterService;
-import com.eagle.mysql.utils.QueryWrapperUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -67,17 +65,16 @@ public class MonsterController {
     @GetMapping("/query/list")
     public Page<Monster> getList(ListMonsterDTO dto) {
         log.info("query/list dto={}", dto);
-        LambdaQueryWrapper<Monster> queryWrapper = new LambdaQueryWrapper<Monster>();
+        LambdaQueryWrapper<Monster> queryWrapper = new LambdaQueryWrapper<>();
         Page<Monster> page = new Page<>(dto.getCurrentPage(), dto.getPageSize(), true);
         // 没有查到count原因未知
-        Page<Monster> monsterPage = monsterMapper.selectPage(page, queryWrapper);
-        return monsterPage;
+        return monsterMapper.selectPage(page, queryWrapper);
     }
 
     @GetMapping("/query/monsterList")
     public Page<MonsterDTO> getMonsterList(ListMonsterDTO dto) {
         log.info("getMonsterList dto={}", dto);
-        LambdaQueryWrapper<Monster> queryWrapper = new LambdaQueryWrapper<Monster>();
+        LambdaQueryWrapper<Monster> queryWrapper = new LambdaQueryWrapper<>();
         // Remove the last method, Mybatis Plus will handle pagination
         Page<Monster> monsterPage = new Page<>(dto.getCurrentPage(), dto.getPageSize(), true); //search count
         monsterPage.setSearchCount(true); // 设置searchCount为true，以返回总记录数
