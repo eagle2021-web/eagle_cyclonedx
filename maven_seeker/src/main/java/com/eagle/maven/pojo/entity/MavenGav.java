@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @TableName("maven_gav")
-@ApiModel(value = "MavenGav对象", description = "")
+@ApiModel(value = "MavenGav对象", description = "收集的坐标")
 public class MavenGav implements Serializable {
 
     private static final long serialVersionUID = 1L;

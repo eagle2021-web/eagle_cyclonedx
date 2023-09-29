@@ -16,8 +16,6 @@ public class RequestMaven2 {
     public static String getHtmlText(String url) throws IOException {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create(mediaType, "");
         Request request = new Request.Builder()
                 .url(url)
                 .method("GET", null)

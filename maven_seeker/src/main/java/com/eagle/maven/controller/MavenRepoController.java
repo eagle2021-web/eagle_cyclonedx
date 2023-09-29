@@ -1,8 +1,6 @@
 package com.eagle.maven.controller;
 
 import com.eagle.maven.service.IMavenRepoService;
-import com.eagle.maven.utiils.RequestMaven2;
-import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
