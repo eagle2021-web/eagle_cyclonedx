@@ -19,7 +19,7 @@ public class CodeGeneratorTest {
         String root_java = projectPath + "/" + "src/test/java/";
         System.out.println(root_java);
         System.out.println("root");
-        String comPrefix = "com/eagle/mysql";
+        String comPrefix = "com/eagle/maven";
         String xmlPath = (root_java + comPrefix + "/mapper/xml");
         System.out.println(xmlPath);
         System.out.println("===");
@@ -49,7 +49,7 @@ public class CodeGeneratorTest {
                     ;
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("monster") // 设置需要生成的表名
+                    builder.addInclude("maven_gav") // 设置需要生成的表名
                             .addTablePrefix("t_", "c_")
                             .controllerBuilder()
                             .enableRestStyle()

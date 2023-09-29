@@ -17,6 +17,7 @@ public class HelloController {
         System.out.println(request.getRequestedSessionId());
         System.out.println(request.getSession().getId());
         System.out.println("hello");
+        System.out.println("hello");
         log.info("bac = {}", "aa");
 
         return "hello";

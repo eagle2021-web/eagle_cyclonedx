@@ -1,13 +1,10 @@
 server:
-  port: 8115 #服务端口
+  port: 8116 #服务端口
 spring:
   profiles:
     active: dev # 环境设置
   application:
-    name: mysql_connect # 服务名
-  data:
-    mongodb:
-      uri: mongodb://user:123456@h131:27021/mydb
+    name: maven_seeker # 服务名
   datasource: # mysql数据库连接
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,21 +15,14 @@ spring:
   servlet:
     multipart:
       maxFileSize: 10MB
-
   devtools:
     restart:
       enabled: true
 logging:
   level:
     root: info
-    yun:
-      ling:
-        pm:
-          mapper: debug
 
 mybatis-plus:
   configuration:
-    map-underscore-to-camel-case: false
-    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    #控制台 不打印sql
+    map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #打印sql到日志文件
