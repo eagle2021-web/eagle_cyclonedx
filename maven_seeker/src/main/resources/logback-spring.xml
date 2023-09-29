@@ -158,7 +158,7 @@
     </logger>
 
     <!-- 利用logback输入mybatis的sql日志，如果不加 additivity="false" 则此logger会将输出转发到自身以及祖先的logger中，就会出现日志文件中sql重复打印-->
-    <logger name="com.eagle.mysql.mapper" level="DEBUG" additivity="false">
+    <logger name="com.eagle.maven.mapper" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="MYSQL_INFO_LOG" />
         <appender-ref ref="MYSQL_INFO_LOG" />

@@ -14,5 +14,7 @@ import com.eagle.maven.pojo.entity.MavenRepo;
 public interface IMavenRepoService extends IService<MavenRepo> {
 
     String getHtmlText(String url);
-    void seekHtmlTextIfNotStored(String url);
+    String seekHtmlTextIfNotStored(String url);
+    void seekHtmlTextIfNotStoredWithQueue(String fullUrl);
+
 }

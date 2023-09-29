@@ -26,7 +26,7 @@ public class RequestMaven2 {
         return response.body().string();
     }
 
-    public static String getRelativePath(String url) {https://repo1.maven.org/maven2/org/apache/activemq/activeio-parent/3.1.4
+    public static String getRelativePath(String url) {
         return url.replace(MAVEN_REPO_PREFIX, "");
     }
 

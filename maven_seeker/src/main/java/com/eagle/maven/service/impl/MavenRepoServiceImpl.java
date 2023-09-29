@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,18 +37,17 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
 
     @Override
     public String getHtmlText(String url) {
-        String text;
+        String text = null;
         try {
             text = RequestMaven2.getHtmlText(url);
         } catch (IOException e) {
             log.error("获取{}对于text失败", url);
-            throw new RuntimeException(e);
         }
         return text;
     }
 
     @Override
-    public void seekHtmlTextIfNotStored(String fullUrl) {
+    public String seekHtmlTextIfNotStored(String fullUrl) {
         log.info("fullUrl={}", fullUrl);
         String relativeUrl = RequestMaven2.getRelativePath(fullUrl);
         LambdaQueryWrapper<MavenRepo> queryWrapper = new LambdaQueryWrapper<>();
@@ -55,31 +55,49 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
         MavenRepo mavenRepo = mavenRepoMapper.selectOne(queryWrapper);
         if (mavenRepo != null) {
             log.info("url对应repo已存在");
-            return ;
+            return mavenRepo.getText();
         }
         String htmlText = getHtmlText(fullUrl);
         if (htmlText == null) {
-            return ;
+            return null;
         }
+
         List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
         boolean fileEndJar = strings.stream().anyMatch(v -> Stream.of(".pom", ".jar", ".war", "aar").anyMatch(v::endsWith));
         if(fileEndJar){
             handleJar(fullUrl);
-            return ;
-        }
-        for (String subRelativeUrl : strings) {
-            if (!subRelativeUrl.endsWith("/")) {
-                continue;
-            }
-            // 下一个
-            String nextFullUrl = joinUrl(fullUrl, subRelativeUrl);
-            System.out.println(nextFullUrl);
-            seekHtmlTextIfNotStored(nextFullUrl);
         }
         mavenRepo = new MavenRepo();
         mavenRepo.setText(htmlText);
         mavenRepo.setRelativePath(relativeUrl);
         mavenRepoMapper.insert(mavenRepo);
+        return htmlText;
+    }
+
+    @Override
+    public void seekHtmlTextIfNotStoredWithQueue(String fullUrl) {
+        LinkedList<String> queue = new LinkedList<>();
+        queue.addLast(fullUrl);
+        while (!queue.isEmpty()){
+            String first = queue.pollFirst();
+            String htmlText = seekHtmlTextIfNotStored(first);
+            if(null == htmlText){
+                try {
+                    Thread.sleep(1000 * 60);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+            List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
+            List<String> list = strings.stream().filter(v -> v.endsWith("/"))
+                    .map(sub -> joinUrl(first, sub))
+                    .collect(Collectors.toList());
+            for (String s : list) {
+                queue.addLast(s);
+            }
+
+        }
     }
 
     private void handleJar(String curFullUrl) {

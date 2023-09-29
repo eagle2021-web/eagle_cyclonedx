@@ -29,7 +29,7 @@ public class MavenRepoController {
     //https://repo1.maven.org/maven2/org/apache/activemq/activeio-parent/
     @GetMapping("/collectHtmlText")
     public String collectHtmlText(String fullUrl){
-        mavenRepoService.seekHtmlTextIfNotStored(fullUrl);
+        mavenRepoService.seekHtmlTextIfNotStoredWithQueue(fullUrl);
         return "ok";
     }
 }
