@@ -14,8 +14,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +37,50 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
     private MavenRepoMapper mavenRepoMapper;
     @Resource
     private MavenGavMapper mavenGavMapper;
+    private static final int THREAD_POOL_SIZE = 10; // 可以根据需要调整线程池大小
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private static final ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<>();
+
+    public void seekHtmlTextIfNotStoredWithQueue(String fullUrl) {
+        QUEUE.add(fullUrl);
+        for (int i = 0; i < THREAD_POOL_SIZE; i++) {
+            executorService.submit(() -> {
+                while (!QUEUE.isEmpty()) {
+                    String url = QUEUE.poll();
+                    log.info("url = {}", url);
+                    if (url == null) {
+                        continue;
+                    }
+                    String htmlText = seekHtmlTextIfNotStored(url);
+                    if (htmlText == null) {
+                        QUEUE.add(url);
+                        continue;
+                    }
+                    List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
+                    List<String> list = strings.stream().filter(v -> v.endsWith("/"))
+                            .map(sub -> joinUrl(url, sub))
+                            .collect(Collectors.toList());
+                    QUEUE.addAll(list);
+                }
+            });
+        }
+        // 你可以选择在某个地方等待所有的任务完成，或者根据你的逻辑来终止executorService。
+        // 例如，在代码的某个地方可以执行以下关闭操作
+        // 注意：这将等待现有任务完成，不再接受新任务
+        System.out.println("here");
+//        executorService.shutdown();
+        try {
+            // 等待1小时以完成所有作业（根据实际情况调整这个时间）
+            if (!executorService.awaitTermination(100, TimeUnit.HOURS)) {
+                log.error("timeout");
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            executorService.shutdownNow();
+            log.error("shutdown");
+            Thread.currentThread().interrupt();
+        }
+    }
 
     @Override
     public String getHtmlText(String url) {
@@ -64,7 +111,7 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
 
         List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
         boolean fileEndJar = strings.stream().anyMatch(v -> Stream.of(".pom", ".jar", ".war", "aar").anyMatch(v::endsWith));
-        if(fileEndJar){
+        if (fileEndJar) {
             handleJar(fullUrl);
         }
         mavenRepo = new MavenRepo();
@@ -74,45 +121,19 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
         return htmlText;
     }
 
-    @Override
-    public void seekHtmlTextIfNotStoredWithQueue(String fullUrl) {
-        LinkedList<String> queue = new LinkedList<>();
-        queue.addLast(fullUrl);
-        while (!queue.isEmpty()){
-            String first = queue.pollFirst();
-            String htmlText = seekHtmlTextIfNotStored(first);
-            if(null == htmlText){
-                try {
-                    Thread.sleep(1000 * 60);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                continue;
-            }
-            List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
-            List<String> list = strings.stream().filter(v -> v.endsWith("/"))
-                    .map(sub -> joinUrl(first, sub))
-                    .collect(Collectors.toList());
-            for (String s : list) {
-                queue.addLast(s);
-            }
-
-        }
-    }
 
     private void handleJar(String curFullUrl) {
-
         String restUrl = RequestMaven2.getRelativePath(curFullUrl);
         if (restUrl.isEmpty()) {
             return;
         }
-        if(restUrl.endsWith("/")){
+        if (restUrl.endsWith("/")) {
             restUrl = restUrl.substring(0, restUrl.length() - 1);
         }
         log.info("handleJar, restUrl = {}", restUrl);
         String[] split = restUrl.split("/");
         List<String> list = Arrays.stream(split).collect(Collectors.toList());
-        if(list.size() <= 2){
+        if (list.size() <= 2) {
             return;
         }
         List<String> strings = list.subList(0, list.size() - 2);
@@ -127,7 +148,7 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
         mavenGavMapper.insert(mavenGav);
     }
 
-    private String joinUrl(String prefix, String sub) {
+    private static String joinUrl(String prefix, String sub) {
         if (!prefix.endsWith("/")) {
             prefix += "/";
         }

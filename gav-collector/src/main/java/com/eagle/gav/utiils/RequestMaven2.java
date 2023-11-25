@@ -14,6 +14,25 @@ import java.util.List;
  * @author chenw
  */
 public class RequestMaven2 {
+    static class Task implements Runnable {
+        private final String name;
+
+        Task(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(name + " is running on thread " + Thread.currentThread().getName());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(name + " is done");
+        }
+    }
+
     private static final String MAVEN_REPO_PREFIX = "https://repo1.maven.org/maven2/";
 
     public static String getHtmlText(String fullUrl) throws IOException {
@@ -51,5 +70,6 @@ public class RequestMaven2 {
         }
         return urls;
     }
+
 
 }
