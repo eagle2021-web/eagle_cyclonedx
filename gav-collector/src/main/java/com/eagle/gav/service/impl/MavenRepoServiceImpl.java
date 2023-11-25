@@ -53,7 +53,13 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
                     }
                     String htmlText = seekHtmlTextIfNotStored(url);
                     if (htmlText == null) {
-                        QUEUE.add(url);
+                        try {
+                            QUEUE.add(url);
+                            Thread.sleep(1000 * 60);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
                         continue;
                     }
                     List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
