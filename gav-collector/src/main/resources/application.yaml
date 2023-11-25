@@ -1,0 +1,28 @@
+server:
+  port: 8116 #服务端口
+spring:
+  profiles:
+    active: dev # 环境设置
+  application:
+    name: maven_seeker # 服务名
+  datasource: # mysql数据库连接
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://h131:3306/hsp_mybatis?useSSL=true&requireSSL=true&verifyServerCertificate=false&characterEncoding=UTF-8
+    username: root
+    password: 123456 # 需要配置环境变量MYSQL_PASSWORD
+
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+  devtools:
+    restart:
+      enabled: true
+logging:
+  level:
+    root: info
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #打印sql到日志文件

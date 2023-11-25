@@ -1,6 +1,6 @@
-package com.eagle.maven.controller;
+package com.eagle.gav.controller;
 
-import com.eagle.maven.service.IMavenRepoService;
+import com.eagle.gav.service.IMavenRepoService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

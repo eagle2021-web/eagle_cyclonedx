@@ -1,4 +1,4 @@
-package com.eagle.maven.utiils;
+package com.eagle.gav.utiils;
 
 import okhttp3.*;
 import org.jsoup.Jsoup;
@@ -16,11 +16,11 @@ import java.util.List;
 public class RequestMaven2 {
     private static final String MAVEN_REPO_PREFIX = "https://repo1.maven.org/maven2/";
 
-    public static String getHtmlText(String url) throws IOException {
+    public static String getHtmlText(String fullUrl) throws IOException {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
-                .url(url)
+                .url(fullUrl)
                 .method("GET", null)
                 .build();
         Response response = client.newCall(request).execute();
@@ -51,4 +51,5 @@ public class RequestMaven2 {
         }
         return urls;
     }
+
 }
