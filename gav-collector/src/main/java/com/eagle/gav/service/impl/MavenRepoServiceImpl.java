@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,43 +38,52 @@ public class MavenRepoServiceImpl extends ServiceImpl<MavenRepoMapper, MavenRepo
     private MavenRepoMapper mavenRepoMapper;
     @Resource
     private MavenGavMapper mavenGavMapper;
-    private static final int THREAD_POOL_SIZE = 10; // 可以根据需要调整线程池大小
+    private static final int THREAD_POOL_SIZE = 20; // 可以根据需要调整线程池大小
     private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
     private static final ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<>();
 
     public void seekHtmlTextIfNotStoredWithQueue(String fullUrl) {
         QUEUE.add(fullUrl);
-        for (int i = 0; i < THREAD_POOL_SIZE; i++) {
-            executorService.submit(() -> {
-                while (!QUEUE.isEmpty()) {
-                    String url = QUEUE.poll();
-                    log.info("url = {}", url);
-                    if (url == null) {
-                        continue;
+        AtomicInteger counter = new AtomicInteger(0);
+        int maxWait = 1000_1000;
+        Runnable runnable = () -> {
+            while (true) {
+                if (QUEUE.isEmpty()) {
+                    counter.incrementAndGet();
+                    if (counter.get() >= maxWait) {
+                        break;
                     }
-                    String htmlText = seekHtmlTextIfNotStored(url);
-                    if (htmlText == null) {
-                        try {
-                            QUEUE.add(url);
-                            Thread.sleep(1000 * 60);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            return;
-                        }
-                        continue;
-                    }
-                    List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
-                    List<String> list = strings.stream().filter(v -> v.endsWith("/"))
-                            .map(sub -> joinUrl(url, sub))
-                            .collect(Collectors.toList());
-                    QUEUE.addAll(list);
+                    continue;
                 }
-            });
+                counter.set(0);
+                String url = QUEUE.poll();
+                if (url == null) {
+                    continue;
+                }
+                String htmlText = seekHtmlTextIfNotStored(url);
+                if (htmlText == null) {
+                    try {
+                        QUEUE.add(url);
+                        Thread.sleep(1000 * 60);
+                    } catch (InterruptedException e) {
+                        log.error("等待结束");
+                    }
+                    continue;
+                }
+                List<String> strings = RequestMaven2.extractLinkFromText(htmlText);
+                List<String> list = strings.stream().filter(v -> v.endsWith("/"))
+                        .map(sub -> joinUrl(url, sub))
+                        .collect(Collectors.toList());
+                QUEUE.addAll(list);
+            }
+        };
+        for (int i = 0; i < THREAD_POOL_SIZE; i++) {
+            executorService.submit(runnable);
         }
         // 你可以选择在某个地方等待所有的任务完成，或者根据你的逻辑来终止executorService。
         // 例如，在代码的某个地方可以执行以下关闭操作
         // 注意：这将等待现有任务完成，不再接受新任务
-        System.out.println("here");
+//        System.out.println("here");
 //        executorService.shutdown();
         try {
             // 等待1小时以完成所有作业（根据实际情况调整这个时间）
